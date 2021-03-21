@@ -7,7 +7,7 @@ const Usuario = require('../models/usuario');
 
 const usuariosGet = async(req= request, res= response) => {
     
-    const { limit = 5, initial= 0 } = req.query;//todo lo que viene en el path despues de '?', desestructuramos la parte que nos interesa.
+    const { limit = 10, initial= 0 } = req.query; //todo lo que viene en el path despues de '?', desestructuramos la parte que nos interesa.
     
     const [total, usuarios] = await Promise.all([ // Ejecutamos ambas promesas a la vez, si falla fallan ambas
         Usuario.countDocuments({ state: true }),
@@ -62,14 +62,13 @@ const usuariosDelete = async(req= request, res= response) => {
 
     const {id} = req.params
 
+
     // No es recomendable eliminar informacion,
     // cambiamos el estado y a efectos practicos del CRUD consta como eliminado pero la informacion persiste.
-    const usuario = await Usuario.findByIdAndUpdate( id, { state: false } );
-    
+    const usuarioBorrado = await Usuario.findByIdAndUpdate( id, { state: false } );
+
     res.json({
-        msg: 'Delete API - controller',
-        id,
-        usuario
+        usuarioBorrado
     });
 };
 
