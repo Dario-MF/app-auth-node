@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { existeCategoriaId } = require('../helpers/db-validators');
+const { existeCategoriaId } = require('../helpers');
 const {
     validarJWT,
     validarCampos,
@@ -19,7 +19,7 @@ router.get('/', obtenerCategorias);
 
 router.get('/:id', [
     check('id', 'Id es invalido').isMongoId(),
-    check('id').custom( existeCategoriaId),
+    check('id').custom(existeCategoriaId),
     validarCampos
 ], obterCategoriaPorId);
 
@@ -29,10 +29,10 @@ router.post('/', [
     validarCampos
 ], crearCategoria);
 
-router.put('/:id', [ 
+router.put('/:id', [
     validarJWT,
     check('id', 'Id es invalido').isMongoId(),
-    check('id').custom( existeCategoriaId),
+    check('id').custom(existeCategoriaId),
     check('nombre', 'El campo nombre tiene que ir relleno').notEmpty(),
     validarCampos
 ], actualizarCategoria);
@@ -41,7 +41,7 @@ router.delete('/:id', [
     validarJWT,
     esAdminRole,
     check('id', 'Id es invalido').isMongoId(),
-    check('id').custom( existeCategoriaId),
+    check('id').custom(existeCategoriaId),
     validarCampos
 ], eliminarCategoria);
 

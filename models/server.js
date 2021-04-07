@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { dbConnection } = require('../database/config.db');
+const fileUpload = require('express-fileupload');
 require('dotenv').config();
 require('colors');
 
@@ -14,9 +15,10 @@ class Server {
             auth: '/api/auth',
             categorias: '/api/categorias',
             productos: '/api/productos',
-            buscar: '/api/buscar'
+            buscar: '/api/buscar',
+            uploads: '/api/uploads'
         }
-        
+
         // Conectar DB
         this.conectarDB();
         // Middlewares.
@@ -30,11 +32,17 @@ class Server {
 
     middlewares() {
         // cors
-        this.app.use( cors() );
+        this.app.use(cors());
         // lectura y parsing de body
-        this.app.use( express.json() );
+        this.app.use(express.json());
         // Directorio publico
         this.app.use(express.static('public'));
+        // File upload
+        this.app.use(fileUpload({
+            useTempFiles: true,
+            tempFileDir: '/tmp/',
+            createParentPath: true
+        }));
     }
 
     routes() {
@@ -43,13 +51,14 @@ class Server {
         this.app.use(this.paths.categorias, require('../routes/categorias'));
         this.app.use(this.paths.productos, require('../routes/productos'));
         this.app.use(this.paths.buscar, require('../routes/buscar'));
-       
+        this.app.use(this.paths.uploads, require('../routes/uploads'));
+
 
     }
 
     listen() {
         this.app.listen(this.port, () => {
-            console.log(`Servidor activo en puerto: ${this.port}`.green,`\nPath: http://localhost:${this.port}`);
+            console.log(`Servidor activo en puerto: ${this.port}`.green, `\nPath: http://localhost:${this.port}`);
         });
     }
 };
