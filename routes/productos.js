@@ -52,6 +52,7 @@ router.put('/:id', [
 
 router.delete('/:id', [
     validarJWT,
+    esAdminRole,
     check('id', 'Id es invalido').isMongoId(),
     check('id').custom( existeProductoId),
     validarCampos

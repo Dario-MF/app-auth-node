@@ -4,10 +4,11 @@ const { Categoria, Producto} = require('../models');
 const obtenerProductos = async (req, res) => {
     const  limit = Number(req.query.limit) || 5;
     const  initial = Number(req.query.initial) || 0;
+    const query = {estado:true}
     try {
         const [ total, productos] = await Promise.all([
-            Producto.countDocuments(),
-            Producto.find()
+            Producto.countDocuments(query),
+            Producto.find(query)
                 .populate('usuario', {name: 1, img: 1, rol: 1})
                 .populate( 'categoria', {nombre: 1, _id: 0})
                 .limit(limit)
@@ -44,9 +45,16 @@ const crearProducto = async (req, res) => {
     const usuario = req.usuario._id;
     const {nombre, precio, descripcion, disponible, categoria} = req.body;
     try {
+        // Validar si existe un producto con ese nombre.
+        const productoExiste = await Producto.findOne({nombre: nombre.toUpperCase()});
+        if(productoExiste){
+            return res.status(400).json({
+                error:'El nombre del producto ya existe'
+            });
+        };
         const { _id } = await Categoria.findOne({nombre: categoria.toUpperCase()})
         const producto = new Producto({
-            nombre,
+            nombre: nombre.toUpperCase(),// guardado en mayus para comparar valor.
             precio,
             descripcion,
             disponible,
@@ -69,15 +77,26 @@ const actualizarProducto = async (req, res) => {
     const usuario = req.usuario._id;
     const {nombre, precio, descripcion, disponible, categoria} = req.body;
     try {
+        const productoAnterior = await Producto.findById(id);
+        if(nombre.toUpperCase() !== productoAnterior.nombre){
+            // Validar si existe un producto con ese nombre.
+            const productoExiste = await Producto.findOne({nombre: nombre.toUpperCase()});
+            if(productoExiste){
+                return res.status(400).json({
+                    error:'El nombre del producto ya existe'
+                });
+            };
+        };
         const { _id } = await Categoria.findOne({nombre: categoria.toUpperCase()});
         const productoActualizado = await Producto.findByIdAndUpdate( id, {
-            nombre,
+            nombre: nombre.toUpperCase(),
             precio,
             descripcion,
             disponible,
             categoria: _id,
             usuario
         }, {new: true});
+        console.log(productoActualizado)
         const producto = await productoActualizado
             .populate('usuario', {name: 1, img: 1, rol: 1})
             .populate( 'categoria', {nombre: 1, _id: 0})

@@ -4,8 +4,7 @@ const { existeCategoriaId } = require('../helpers/db-validators');
 const {
     validarJWT,
     validarCampos,
-    esAdminRole,
-    tieneRol
+    esAdminRole
 } = require('../middlewares');
 const { crearCategoria,
     obtenerCategorias,
