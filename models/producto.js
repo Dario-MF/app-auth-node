@@ -10,8 +10,11 @@ const productoSchema = new Schema({
         default: 0
     },
     descripcion: {
-        type:String,
+        type: String,
         default: 'Sin descripcion'
+    },
+    img: {
+        type: String
     },
     disponible: {
         type: Boolean,
@@ -25,7 +28,7 @@ const productoSchema = new Schema({
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
-        required: true 
+        required: true
     },
     categoria: {
         type: Schema.Types.ObjectId,
@@ -34,11 +37,11 @@ const productoSchema = new Schema({
     },
 }, {
     versionKey: false,
-    timestamps: true 
+    timestamps: true
 });
 
-productoSchema.methods.toJSON = function() {
-    const { estado, ...data} = this.toObject();
+productoSchema.methods.toJSON = function () {
+    const { estado, ...data } = this.toObject();
     return data;
 };
 
